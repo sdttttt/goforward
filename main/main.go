@@ -1,7 +1,8 @@
 package main
 
 import (
-	"fmt"
+	"bufio"
+	"github.com/sdttttt/goforward"
 	"net"
 )
 
@@ -12,7 +13,7 @@ func main() {
 	} else {
 		for {
 			if conn, err := ln.Accept(); err == nil {
-				connhandler(conn)
+				go connhandler(conn)
 			} else {
 				break
 			}
@@ -21,14 +22,16 @@ func main() {
 }
 
 func connhandler(conn net.Conn) {
-	var buf = make([]byte, 2048)
 
-	_, err := conn.Read(buf)
-	if err != nil {
-		println(err.Error())
+	client := &goforward.ClientConn{
+		Reader: bufio.NewReader(conn),
+		Conn:   conn,
 	}
 
-	fmt.Println(string(buf))
-	println(conn.LocalAddr().String())
-	println(conn.RemoteAddr().String())
+	connType, targetHost, port, protocol := client.ParseConnectionInfo()
+
+	println("ctype => ", connType)
+	println("target => ", targetHost)
+	println("port => ", port)
+	println("proto => ", protocol)
 }

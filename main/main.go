@@ -2,14 +2,16 @@ package main
 
 import (
 	"bufio"
-	"github.com/sdttttt/goforward"
+	"log"
 	"net"
+	"net/textproto"
+
+	"github.com/sdttttt/goforward"
 )
 
 func main() {
-
 	if ln, err := net.Listen("tcp", ":10086"); err != nil {
-		println(err.Error())
+		log.Println(err.Error())
 	} else {
 		for {
 			if conn, err := ln.Accept(); err == nil {
@@ -22,16 +24,7 @@ func main() {
 }
 
 func connhandler(conn net.Conn) {
-
-	client := &goforward.ClientConn{
-		Reader: bufio.NewReader(conn),
-		Conn:   conn,
-	}
-
-	connType, targetHost, port, protocol := client.ParseConnectionInfo()
-
-	println("ctype => ", connType)
-	println("target => ", targetHost)
-	println("port => ", port)
-	println("proto => ", protocol)
+	// implement Text-based protocol
+	reader := textproto.NewReader(bufio.NewReader(conn))
+	goforward.NewClient(conn, reader)
 }

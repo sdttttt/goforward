@@ -1,8 +1,12 @@
 package ctype
 
-const (
-	HTTP  = "HTTP"
-	HTTPS = "CONNECT"
+type ProtocolType int
 
-	HTTP_PORT = "80"
+const (
+	HTTP  ProtocolType = 1
+	HTTPS ProtocolType = 2
+	TCP   ProtocolType = 3
+
+	HTTP_PORT   = "80"
+	HTTP_PREFIX = "http://"
 )

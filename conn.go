@@ -10,6 +10,7 @@ import (
 	"github.com/sdttttt/goforward/ctype"
 )
 
+// NewClient Create ClientConn
 func NewClient(conn net.Conn, reader *textproto.Reader) *ClientConn {
 
 	connType, firstLine := parseConnectionInfo(reader)
@@ -60,16 +61,16 @@ func handleConnectInfomation(firstLine string, reader *textproto.Reader,
 
 	switch connType {
 	case ctype.HTTPS:
-		return ParseHttp(firstLine, reader)
+		return ParseHTTP(firstLine, reader)
 	case ctype.HTTP:
-		return ParseHttp(firstLine, reader)
+		return ParseHTTP(firstLine, reader)
 	default:
-		return ParseHttp(firstLine, reader)
+		return ParseHTTP(firstLine, reader)
 	}
 
 }
 
-// Client Connection
+// ClientConn is connection Object of connect to Server
 type ClientConn struct {
 	reader       *textproto.Reader
 	conn         net.Conn
@@ -78,6 +79,7 @@ type ClientConn struct {
 	buildRequest *bytes.Buffer
 }
 
+// BuildTunnel build TargetHost and Client connection
 func (cc *ClientConn) BuildTunnel(remoteConn net.Conn) {
 
 }

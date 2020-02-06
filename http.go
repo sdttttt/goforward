@@ -6,7 +6,8 @@ import (
 	"strings"
 )
 
-func ParseHttp(firstLine string, reader *textproto.Reader) (string, *bytes.Buffer) {
+// ParseHTTP rebuild new Request to TargetHost
+func ParseHTTP(firstLine string, reader *textproto.Reader) (string, *bytes.Buffer) {
 
 	buf := bytes.NewBuffer(make([]byte, 4096))
 	targetHost := getTargetHost(firstLine)

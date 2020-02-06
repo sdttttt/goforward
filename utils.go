@@ -1,9 +1,18 @@
 package goforward
 
 const (
-	// SPACE is " "
+	// SPACE => " "
 	SPACE = " "
 
-	//CR is a NewLine character
+	//CR => a NewLine character
 	CR = "\r\n"
+
+	//TCP => network connection Type
+	TCP = "tcp"
+
+	// HttpsCompleteRequest => http request has builded send to Client
+	HttpsCompleteRequest = "HTTP/1.1 200 Connection established" + CR
+
+	// HttpsMethod => request method of HTTPS
+	HttpsMethod = "CONNECT"
 )

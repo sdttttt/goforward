@@ -1,28 +1,38 @@
 package goforward
 
 import (
-	"bytes"
-	"net/textproto"
+	"io"
+	"net"
+	"net/http"
 	"strings"
 )
 
-// ParseHTTP rebuild new Request to TargetHost
-func ParseHTTP(firstLine string, reader *textproto.Reader) (string, *bytes.Buffer) {
+func (*ProxyHTTPServer) httpHandler(res http.ResponseWriter, req *http.Request) {
+	proxy := http.DefaultTransport
 
-	buf := bytes.NewBuffer(make([]byte, 4096))
-	targetHost := getTargetHost(firstLine)
-	buf.WriteString(firstLine + CR)
+	outReq := new(http.Request)
+	*outReq = *req
 
-	b := make([]byte, 4096)
-	reader.R.Read(b)
+	if clientIP, _, err := net.SplitHostPort(req.RemoteAddr); err == nil {
+		if prior, ok := outReq.Header["X-Forwarded-For"]; ok {
+			clientIP = strings.Join(prior, ", ") + ", " + clientIP
+		}
+		outReq.Header.Set("X-Forwarded-For", clientIP)
+	}
 
-	println(string(b))
+	pres, err := proxy.RoundTrip(outReq)
+	if err != nil {
+		res.WriteHeader(http.StatusBadGateway)
+		return
+	}
 
-	buf.Write(b)
-	return targetHost, buf
-}
+	for k, v := range pres.Header {
+		for _, vv := range v {
+			res.Header().Add(k, vv)
+		}
+	}
 
-func getTargetHost(firstLine string) string {
-	films := strings.Split(firstLine, SPACE)
-	return films[1]
+	res.WriteHeader(pres.StatusCode)
+	io.Copy(res, pres.Body)
+	pres.Body.Close()
 }
